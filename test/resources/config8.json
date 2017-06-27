@@ -1,0 +1,26 @@
+{
+  "protocol": {
+    "mqtt": {
+      "serverAddress": "iotmid-docker42.cpqd.com.br",
+      "port": 1883,
+      "topic": "/admin/3ee2/attrs"
+    }
+  },
+  "maps": {
+    "key": "AIzaSyACP1GVizUzmVvWLk4EnC2D_Ow5248ZTFY"
+  },
+  "device": {
+    "frequency": 1000,
+    "duration": 18000,
+    "sensors": [
+      {
+        "name": "coordenate",
+        "value": "ROUTE([-22.919374, -47.054483],[-22.815960, -47.045142])"
+      },
+      {
+        "name": "temperature",
+        "value": "NORMAL(23,3)"
+      }
+    ]
+  }
+}

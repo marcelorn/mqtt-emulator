@@ -1,0 +1,28 @@
+{
+  "protocol": {
+    "mqtt": {
+      "serverAddress": "10.101.47.51",
+      "port": 1883,
+      "topic": "/AAFF9977/s012/attrs"
+    }
+  },
+  "device": {
+    "accelerate": 3600,
+    "frequency": {
+      "columnDate": "FILE(test/resources/data4.csv:4)",
+      "columnDateFormat": "YYYY-MM-DD",
+      "columnTime": "FILE(test/resources/data4.csv:5)",
+      "columnTimeFormat": "HH:mm:ss"
+    },
+    "sensors": [
+      {
+        "name": "temperature",
+        "value": "FILE(test/resources/data4.csv:2)"
+      },
+      {
+        "name": "voltage",
+        "value": "FILE(test/resources/data4.csv:3)"
+      }
+    ]
+  }
+}

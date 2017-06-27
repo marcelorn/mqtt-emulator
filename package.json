@@ -1,0 +1,45 @@
+{
+  "name": "device_emulator",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node index.js --config-file=/test/resources/config2.json -D -S",
+    "test": "node_modules/.bin/mocha test/**/*.test.js",
+    "start-server": "node server/app.js",
+    "debug": "node_modules/.bin/nodemon --debug server/app.js",
+    "debug-server": "node_modules/.bin/nodemon --inspect server/app.js"
+  },
+  "node-red": {
+    "nodes": {
+      "device-emulator": "node_red/emulator.js"
+    }
+  },
+  "dependencies": {
+    "@google/maps": "^0.4.1",
+    "ajv": "^5.1.5",
+    "app-root-path": "^2.0.1",
+    "body-parser": "^1.17.1",
+    "csv": "^1.1.1",
+    "csv-parse": "^1.2.0",
+    "csvtojson": "^1.1.6",
+    "ejs": "^2.5.6",
+    "express": "^4.15.3",
+    "jsonfile": "^3.0.0",
+    "lodash.max": "^4.0.1",
+    "minimist": "^1.2.0",
+    "mkdirp": "^0.5.1",
+    "moment": "^2.18.1",
+    "mqtt": "^2.7.2",
+    "probability-distributions": "^0.9.1",
+    "validator": "^7.0.0"
+  },
+  "devDependencies": {
+    "assert": "^1.4.1",
+    "chai": "^3.5.0",
+    "chai-fs": "^1.0.0",
+    "del": "^2.2.2",
+    "mocha": "^3.4.1",
+    "nodemon": "^1.11.0",
+    "sinon": "^2.2.0"
+  }
+}

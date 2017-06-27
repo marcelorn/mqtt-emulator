@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+        crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+
+    <style>
+        .header {
+            text-align: center;
+            background-color: aliceblue;
+            margin-bottom: 20px;
+            border-bottom-style: ridge;
+        }
+    </style>
+
+</head>
+
+<body>
+    <nav>
+        <div class="row header">
+            <div class="col-md-11">
+                <h3>Device Emulator Results</h3>
+            </div>
+            <div class="col-md-1">
+                <a href="#" onclick="closeServer()">Stop server</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <select id="results" class="form-control" onchange="changeSensorResult()"></select>
+            </div>
+            <div class="col-md-6">
+                <select id="resultFilter" class="form-control" onchange="changeFilter()">
+                    <option value="ALL">All Sensors</option>        
+                </select>
+            </div>
+        </div>
+        <div id="graphic-container">
+        </div>
+    </div>
+    <script>
+        const server = 'http://localhost:3000';
+
+        function createSelect(options) {
+            const resultSelect = document.querySelector('#results');
+            options.reverse().forEach(optionValue => {
+                const resultOption = document.createElement('option');
+                resultOption.value = optionValue;
+                resultOption.text = new Date(parseInt(optionValue.replace('.json', ''))).toString();
+                resultSelect.appendChild(resultOption);
+
+            });
+            changeSensorResult();
+        }
+
+        function createGraphic(sensorsResult) {
+
+            const graphicContainer = document.querySelector('#graphic-container');
+            const resultFilterSelect = document.querySelector('#resultFilter');
+
+            document.querySelectorAll('div[id^=graphic-sensor]').forEach(graphic => {
+                graphicContainer.removeChild(graphic);
+            });
+
+            sensorsResult.forEach(sensorResult => {
+
+                const resultFilterOption = document.createElement('option');
+                resultFilterOption.value = sensorResult.name;
+                resultFilterOption.text = sensorResult.name;
+                resultFilterSelect.appendChild(resultFilterOption);
+
+                const hueColor = `hsl(${360 * Math.random()},${(25 + 70 * Math.random())}%,50%)`;
+
+                const trace = {
+                    x: sensorResult.values,
+                    name: sensorResult.name,
+                    type: 'histogram',
+                    histnorm: 'probability',
+                    marker: {
+                        color: hueColor,
+                    },
+                };
+                const layout = {
+                    barmode: 'stack',
+                    title: `${sensorResult.distribution} distribution`,
+                    xaxis: { title: sensorResult.name },
+                    yaxis: { title: 'Probability' }
+                };
+
+                const sensorGraphicContainer = document.createElement('div');
+                sensorGraphicContainer.id = `graphic-sensor-${sensorResult.name}`;
+
+                graphicContainer.appendChild(sensorGraphicContainer);
+
+                Plotly.newPlot(sensorGraphicContainer.id, [trace], layout);
+            });
+
+        }
+
+        function changeFilter() {
+            const sensorFilter = document.getElementById('resultFilter').value;
+            let display = 'none';
+            if (sensorFilter === 'ALL') {
+                display = 'block';
+            }
+            document.querySelectorAll('div[id^=graphic-sensor]').forEach(graphicDiv => {
+                graphicDiv.style.display = display;
+            });
+            if (sensorFilter !== 'ALL') {
+                document.querySelector(`#graphic-sensor-${sensorFilter}`).style.display = 'block';
+            }
+        }
+
+        function cleanSensorFilter() {
+            const resultFilter = document.querySelector('#resultFilter');
+            document.querySelectorAll('#resultFilter option').forEach(option => {
+                if (option.value !== 'ALL') {
+                    resultFilter.removeChild(option);
+                }
+            });
+            resultFilter.value = 'ALL';
+            changeFilter();
+        }
+
+        function changeSensorResult() {
+            cleanSensorFilter();
+            const resultJson = document.getElementById('results').value;
+            fetch(`${server}/file/${resultJson}`)
+                .then(data => data.json())
+                .then(data => createGraphic(data));
+        }
+
+        function closeServer() {
+            fetch(`${server}/quit`)
+                .then(data => { 
+                    console.log(data);
+                    location.reload();
+                });
+        }
+
+        function init() {
+            fetch(`${server}/list`)
+                .then(data => data.json())
+                .then(data => createSelect(data));
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

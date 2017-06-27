@@ -1,0 +1,18 @@
+{
+  "protocol": {
+    "mqtt": {
+      "serverAddress": "10.101.47.51",
+      "port": 1883,
+      "topic": "/AAFF9977/s001/attrs"            
+    }
+  },
+  "csv": {
+    "accelerate": 36000,
+    "file": "test/resources/data6.csv",
+    "columnDate": "date",
+    "columnDateFormat": "YYYY-MM-DD",
+    "columnTime": "time",
+    "columnTimeFormat": "HH:mm:ss",
+    "columns":["pluviometric", "sensor_type", "temperature", "date", "time"]
+  }
+}

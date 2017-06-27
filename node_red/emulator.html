@@ -1,0 +1,202 @@
+<script type="text/javascript">
+    RED.nodes.registerType('emulate', {
+        category: 'Emulator',
+        color: "#a6bbcf",
+        defaults: {
+            name: { value: "Emulator" },
+            frequency: { value: 1000, required: true, validate: RED.validators.number() },
+            duration: { value: 5000, required: true, validate: RED.validators.number() },
+            sensors: { value: [] }
+        },
+        inputs: 0,
+        outputs: 1,
+        icon: "hash.png",
+        label: function () {
+            return this.name || "emulate";
+        },
+        oneditprepare: function () {
+            var node = this;
+
+            node.distributions = ['normal', 'gauss', 'binomial', 'uniform', 'poisson'];
+
+            node.parseExpression = (sensorValue) => {
+                const valuePattern = /^(\w+)\((.*|)\)$/;
+                const valueMatch = valuePattern.exec(sensorValue);
+                return valueMatch;
+            }
+
+            node.checkDistribution = (valueMatch) => {
+                const distribution = valueMatch[1].toLowerCase();
+                if (!distribution || node.distributions.indexOf(distribution) < 0) {
+                    return false;
+                }
+                return true;
+            }
+
+            node.validateDistribution = value => {
+                if (value) {
+                    const valueMatch = node.parseExpression(value);
+                    if (!valueMatch || !node.checkDistribution(valueMatch)) {
+                        alert(`Distribution ${value} is invalid. Probability distributions avaliable: ${node.distributions.join(',')}`);
+                        return false;
+                    }
+                    return true;
+                }
+                return false;
+            }
+
+            node.validateType = type => {
+                if (!type) {
+                    alert(`Type ${type} is invalid.`);
+                    return false;
+                }
+                return true;
+            }
+
+            node.createSensorForm = (container, i, sensor) => {
+                const containerRow = $('<div/>', { class: 'form-row' });
+                const typeLabel = $('<label/>', { for: i, style: 'width: 10%' })
+                    .append('Type:')
+                    .appendTo(containerRow);
+                const typeInput = $('<input/>', {
+                    type: 'text',
+                    id: `node-input-sensor-type-${i}`,
+                    class: 'node-input-sensor-type',
+                    style: 'width: 29%; margin-right: 1%',
+                    value: sensor.type || ''
+                }).appendTo(containerRow)
+                    .change(event => {
+                        node.validateType(event.target.value);
+                    });
+
+                const valueLabel = $('<label/>', { for: i, style: 'width: 20%' })
+                    .append('Distribution:')
+                    .appendTo(containerRow);
+                const valueInput = $('<input/>', {
+                    type: 'text',
+                    id: `node-input-sensor-value-${i}`,
+                    class: 'node-input-sensor-value',
+                    style: 'width: 40%',
+                    value: sensor.value || ''
+                }).appendTo(containerRow)
+                    .change(event => {
+                        node.validateDistribution(event.target.value);
+                    });
+                containerRow.appendTo(container);
+            };
+
+            $("#node-input-sensors-container").editableList({
+                removable: true,
+                addItem: function (container, index, sensor) {
+                    node.createSensorForm(container, index, sensor);
+                }
+            });
+
+            //fill sensors
+            for (let i = 0; i < node.sensors.length; i++) {
+                $("#node-input-sensors-container").editableList('addItem', node.sensors[i]);
+            }
+            //fill default sensor
+            if (node.sensors.length === 0) {
+                $("#node-input-sensors-container").editableList('addItem', { type: 'temperature', value: 'normal(23,3)' });
+            }
+
+        },
+        oneditsave: function (event) {
+            var node = this;
+            const sensorsElement = $("#node-input-sensors-container").editableList('items')
+            node.sensors = [];
+
+            let sensors = []
+            let isValidSensors = true;
+
+            sensorsElement.each((i) => {                
+                const type = $(`#node-input-sensor-type-${i}`).val();
+                const value = $(`#node-input-sensor-value-${i}`).val();
+                if (node.validateType(type) && node.validateDistribution(value)) {
+                    sensors.push({ type: type, value: value });
+                    isValidSensors = true;
+                } else {
+                    sensors = [];
+                    isValidSensors = false;
+                    return;
+                }
+            });
+
+
+            if (!isValidSensors) {
+                alert("You have to adjust the sensors' data.");
+                return;
+            }
+            if (!sensors.length) {
+                alert('There are no sensors to emulate.');
+                return;
+            }
+
+            node.sensors.push(...sensors);
+        },
+    });
+
+</script>
+
+<script type="text/x-red" data-template-name="emulate">
+    <div class="form-row">
+        <label for="node-input-frequency"><i class="fa fa-history" aria-hidden="true"></i> Frequency</label>
+        <input type="text" id="node-input-frequency">
+    </div>
+    <div class="form-row">
+        <label for="node-input-duration"><i class="fa fa-hourglass-half" aria-hidden="true"></i> Duration</label>
+        <input type="text" id="node-input-duration">
+    </div>
+    <div class="form-row node-input-sensors-container-row">
+        <label for="form-row node-input-sensors-container-row"><i class="fa fa-microchip" aria-hidden="true"></i> Sensors</label>
+        <ol id="node-input-sensors-container"></ol>
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="emulate">
+    <p>Emulate values for a sensor.</p>
+
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>frequency
+            <span class="property-type">number</span>
+        </dt>
+        <dd> Frequency at which the data is sent.</dd>
+
+        <dt class="optional">duration
+            <span class="property-type">number</span>
+        </dt>
+        <dd> Duration of emulation.</dd>
+        <dt>list of sensors</dt>
+        <dd>
+            <dl class="message-properties">
+                <dt>type
+                    <span class="property-type">string</span>
+                </dt>
+                <dd>
+                    <p>Type of sensor</p>
+                    <p>i.e.: 'temperature'</p>
+                </dd>
+                <dt>distribution
+                    <span class="property-type">string</span>
+                </dt>
+                <dd>
+                    <p>Probability distribution that the emulator will use to simulate the data</p>
+                    <p>i.e.: 'NORMAL(23,3)'</p>
+                    </dt>
+            </dl>
+            </dd>
+
+    </dl>
+
+    <h3>Outputs</h3>
+    <p>Payload with interpolate values from result of emulation of each sensor</p>
+    <p>i.e.: <code>msg.payload = { 'temperature' : 23,
+         'relativeHumidity': 75 } </code></p>
+
+</script>
