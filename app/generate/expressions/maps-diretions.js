@@ -29,7 +29,9 @@ module.exports = (config, sensor) => {
             mode: 'driving',
         }, (err, response) => {
             if (!err) {
-                sensorResult.values = response.json.routes[0].legs[0].steps.map(step => { return step.start_location })                
+                sensorResult.values = response.json.routes[0].legs[0].steps.map(step => { 
+                    return `${step.start_location.lat},${step.start_location.lng}` 
+                });
                 resolve(sensorResult);
             }
             reject(err);
