@@ -5,19 +5,19 @@ const utils = require('../utils');
 var fs = require('fs');
 
 module.exports = (config, sensors) => {
-    
+
     const mqttConfig = config.protocol.mqtt;
 
     var options = {
         keepalive: 0,
         connectTimeout: 60 * 60 * 1000
     };
- 
+
     if (mqttConfig.username && mqttConfig.password) {
         options.username = mqttConfig.username;
         options.password = mqttConfig.password;
     }
- 
+
     let protocol = '';
     if ((mqttConfig.secure != undefined) && (mqttConfig.secure == true)) {
       // Read TLS configuration
@@ -27,19 +27,19 @@ module.exports = (config, sensors) => {
       for (var i = 0; i < mqttConfig.tls.ca.length; i++) {
         options.ca.push(fs.readFileSync(mqttConfig.tls.ca[i].name, 'utf8'));
       }
-      // This should be removed from here ASAP
-      options.passphrase = 'cpqdiot2017';
+
+      options.passphrase = mqttConfig.passphrase;
       //options.secureProtocol = 'TLSv1_2_method';
       options.port = 8883;
       options.protocol = 'mqtts';
       options.protocolId = 'MQIsdp';
       options.protocolVersion = 3;
- 
+
       protocol = 'mqtts://';
     } else {
       protocol = 'mqtt://';
     }
- 
+
     const client = mqtt.connect(protocol + mqttConfig.serverAddress + ':' + mqttConfig.port, options);
 
     client.on('connect', () => {
@@ -58,5 +58,5 @@ module.exports = (config, sensors) => {
         client.end();
         console.log('Done.');
     }
-    
-} 
+
+}

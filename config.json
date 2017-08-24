@@ -7,11 +7,12 @@
   "protocolId": "MQIsdp",
   "protocolVersion": 3,
   "secure": true,
+  "passphrase": "cpqdiot2017",
   "tls": {
         "key": "./certs/iotagent.key",
         "cert": "./certs/iotagent.crt",
         "ca": [ {"name": "./certs/ca.crt"} ]
-    }  
+    }
   }
 },
 "device":{
@@ -22,7 +23,7 @@
       {"name": "tensao", "value": "UNIFORM(30, 45)"},
       {"name": "corrente", "value": "UNIFORM(60, 75)"},
       {"name": "teadw", "value": "UNIFORM(90, 105)"}
-      
+
   ]
 }
 }
