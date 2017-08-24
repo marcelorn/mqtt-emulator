@@ -1,6 +1,7 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 *.orig
-
+*.crt
+*.key
 
 # dependencies
 node_modules
@@ -17,4 +18,3 @@ build
 npm-debug.log
 
 /tmp
-/certs
