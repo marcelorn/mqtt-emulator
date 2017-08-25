@@ -1,20 +1,29 @@
 {
 "protocol": {
   "mqtt":{
-  "serverAddress": "10.101.47.51",
-  "port": 1883,
-  "topic": "/AAFF9977/s001/attrs"
+  "serverAddress": "localhost",
+  "port": 8883,
+  "topic": "/cpqd/9ba3/attrs",
+  "protocolId": "MQIsdp",
+  "protocolVersion": 3,
+  "secure": true,
+  "passphrase": "cpqdiot2017",
+  "tls": {
+        "key": "./certs/iotagent.key",
+        "cert": "./certs/iotagent.crt",
+        "ca": [ {"name": "./certs/ca.crt"} ]
+    }
   }
 },
 "device":{
   "frequency": 1000,
-  "duration": 5000,
-  "accelerate": 1,
+  "duration": 10000000,
+  "accelerate": 10,
   "sensors": [
-      {"name": "temperatura", "value": "NORMAL(23,3)"},
-      {"name": "tensao", "value": "UNIFORM(120, 135)"},
-      {"name": "portaAberta", "value": "BINOMIAL(1, 0.8)"},
-      {"name": "defeito", "value": "POISSON(4)"}
+      {"name": "tensao", "value": "UNIFORM(30, 45)"},
+      {"name": "corrente", "value": "UNIFORM(60, 75)"},
+      {"name": "teadw", "value": "UNIFORM(90, 105)"}
+
   ]
 }
 }
