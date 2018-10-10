@@ -3,6 +3,7 @@ const { expressions, probabilityDistributions } = require('./expressions/express
 const pd = require('./expressions/probability-distributions');
 const csvColumnReader = require('./expressions/csv-column-reader');
 const mapsDirections = require('./expressions/maps-diretions');
+const constantGenerator = require('./expressions/constant-generator');
 
 module.exports = (config) => {
 
@@ -17,9 +18,11 @@ module.exports = (config) => {
                     promiseResults.push(csvColumnReader(config, sensor));
                 } else if (sensor.expression === expressions.ROUTE) {
                     promiseResults.push(mapsDirections(config, sensor));
+                } else if (sensor.expression === expressions.CONST) {
+                    promiseResults.push(constantGenerator(config, sensor));
                 }
             });
-
+     
             Promise.all(promiseResults)
                 .then(sensorsGroupedByName => {
                     ganerateUtils.save(sensorsGroupedByName)

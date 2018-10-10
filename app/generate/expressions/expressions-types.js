@@ -8,6 +8,7 @@ const probabilityDistributions = {
 
 const expressions = {    
     FILE: 'file',
+    CONST: 'constant',
     ROUTE: 'route'
 };
 
