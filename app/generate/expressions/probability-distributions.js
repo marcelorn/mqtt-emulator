@@ -13,8 +13,13 @@ _calcBinomial = (amount, values) => {
 }
 
 _calcUniform = (amount, values) => {
-    const [min, max] = values;
-    return PD.runif(amount, min, max);
+    const [min, max, round_val] = values;
+    let results = PD.runif(amount, min, max);
+    if (round_val == undefined) {
+        return results;
+    } else {
+        return results.map(value => value.toFixed(round_val));
+    }
 }
 
 _calcPoisson = (amount, values) => {
