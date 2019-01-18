@@ -1,6 +1,3 @@
-const ganerateUtils = require('../utils');
-const util = require("util");
-
 module.exports = (config, sensor) => {
 
     const values = sensor.expressionValues.match(/^\[(.*)\]/)[1].split(",");
