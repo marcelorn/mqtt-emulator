@@ -21,8 +21,13 @@ convertAllAttToString = payload => {
         if (payload.hasOwnProperty(p)) {
             if (typeof payload[p] === 'object') {                
                 convertAllAttToString(payload[p]);
-            } else {                
-                payload[p] = String(payload[p]);
+            } else {
+                try {
+                    payload[p] = String(eval(payload[p]));
+                } catch(error) {
+                    payload[p] = String(payload[p]);
+                }
+                console.log(`payload[p]: ${payload[p]}`);
             }
         }
     }

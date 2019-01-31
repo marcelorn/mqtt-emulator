@@ -28,6 +28,8 @@ module.exports = config => {
                     matches.push([values[1],values[2]]);
                 }
                 values = matches;
+            } else if (expression === EXPRESSIONS.CONST) {
+                values = params;
             } else {
                 values = params.split(',');
                 if (expression !== EXPRESSIONS.FILE) {
