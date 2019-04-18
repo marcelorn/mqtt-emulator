@@ -8,7 +8,7 @@ module.exports = args => {
         setup(args)
             .then(config => {
                 generate(config)
-                    .then(sensors => publisher(config, sensors))
+                    .then(sensors => publisher.autoPublish(config, sensors))
                     .catch(err => utils.log('error', err));
             }).catch(err => utils.log('error', err));
     } catch (err) {

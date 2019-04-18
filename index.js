@@ -2,6 +2,7 @@ const cmdLineProcess = require('./cmdline');
 const emulator = require('./app/emulator');
 const appRoot = require('app-root-path');
 const { exec, fork } = require('child_process');
+const api = require('./api');
 
 module.exports = cmdLineProcess;
 
@@ -22,7 +23,9 @@ debugServer = () => {
 }
 
 app = args => {
-      if (args.run) {
+      if (args.api) {
+            api(args.apiPort);
+      } else if (args.run) {
             console.log('Device emulator starting...');
             emulator(args);
       } else if (args.flush) {

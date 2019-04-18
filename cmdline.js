@@ -4,6 +4,8 @@ const filesys = require('fs');
 const doHelp = (argumentHelp) => {
 
   const text = `Options:
+   --A, --a,    --api                                               Start API server
+       options: --P,   --p,   --port=PORT                           API server on localhost:PORT
    --R, --r,    --run                                               Start device emulator
        options: --CF,  --cf,  --config-file=FILE                    Use external JSON configuration file.
                 --S,   --s,   --save                                Save emulated data to  ./tmp/current_date_in_ms.txt file
@@ -22,9 +24,11 @@ const doHelp = (argumentHelp) => {
 
 module.exports = (description, args, processFunction, argumentHelp) => {
   args = minimist(args, {
-    string: ['config-file', 'distributions-file'],
-    boolean: ['run', 'debug-server', 'flush', 'save', 'debug'],
+    string: ['port', 'config-file', 'distributions-file'],
+    boolean: ['api', 'run', 'debug-server', 'flush', 'save', 'debug'],
     alias: {
+      api: ['A', 'a', 'api'],
+      apiPort: ['P', 'p', 'port'],
       run: ['R', 'r', 'run'],
       configFile: ['CF', 'cf', 'config-file'],
       distributionsFile: ['DF', 'df', 'distributions-file'],      
@@ -36,6 +40,7 @@ module.exports = (description, args, processFunction, argumentHelp) => {
     },
     default: {
       configFile: 'config.json',
+      apiPort: 5000,
       debug: false,
       show: false
     },
@@ -50,7 +55,7 @@ module.exports = (description, args, processFunction, argumentHelp) => {
     return;
   }
 
-  if (!args.run && !args.debugServer && !args.flush) {
+  if (!args.api && !args.run && !args.debugServer && !args.flush) {
     args.run = true;
   }
 
