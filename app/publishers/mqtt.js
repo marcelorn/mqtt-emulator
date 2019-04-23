@@ -51,10 +51,10 @@ getClient = (config) => {
   return client;
 }
 
-autoPublish = (config, sensors) => {
+autoPublish = (config, sensors, running) => {
   const client = getClient(config.protocol.mqtt);
   client.on('connect', () => {
-    scheduler(config, sensors, _publish, _afterPublish);
+    scheduler(config, sensors, _publish, _afterPublish, running);
   });
 
   _publish = payload => {

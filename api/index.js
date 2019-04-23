@@ -18,6 +18,6 @@ module.exports = (port) => {
     app.use('/mqtt', routes.mqtt);
     
     app.listen(port, () =>
-        console.log(`Starting API server on localhost:${port}`),
+        console.log(`Starting API server on localhost:${port}`)
     );
 }

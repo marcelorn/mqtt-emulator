@@ -3,7 +3,7 @@ const router = Router();
 const publisher = require('../../app/publishers/mqtt');
 
 router.get('/', (req, res) => {
-  return res.status(200).send({'success': true});
+  return res.status(200).send({'success': true, 'message': 'This is the MQTT endpoint!'});
 });
 
 router.post('/publish', (req, res) => {
