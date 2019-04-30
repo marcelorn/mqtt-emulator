@@ -15,6 +15,7 @@ router.get('/', (req, res) => {
 router.post('/start', (req, res) => {
   utils.log('error', JSON.stringify(req.body));
   const config = req.body;
+  config.csvMap = new Map();
   generate(config)
     .then(sensors => publisher.autoPublish(config, sensors, emulator))
     .catch(err => utils.log('error', err));
@@ -22,7 +23,9 @@ router.post('/start', (req, res) => {
 });
 
 router.post('/stop', (req, res) => {
-  emulator.cancel();
+  const deviceId = req.body.deviceId;
+  console.log(`Stop emulator for device Id ${deviceId}`);
+  emulator.cancel(deviceId);
   return res.status(200).send({'success': true, 'message': 'Emulator has stopped!'});
 });
 

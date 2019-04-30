@@ -1,5 +1,8 @@
 const utils = require('./utils');
 
+let keepRunning = {};
+let autoRestart = {};
+
 module.exports = (config, sensors, publishFunction, afterPublishFunction, running) => {
 
     sleep = (time) => {
@@ -7,22 +10,33 @@ module.exports = (config, sensors, publishFunction, afterPublishFunction, runnin
     }
 
     async function scheduler(config, sensors, publishFunction, afterPublishFunction, running) {
-        var keepRunning = true;
-        running.cancel = function() {
-            keepRunning = false;
+        keepRunning[config.device.id] = true;
+        autoRestart[config.device.id] = Boolean(config.device.autoRestart);
+
+        running.cancel = function(id) {
+            if (keepRunning.hasOwnProperty([id])) {
+                console.log(`Device Simulation (${id}) has been terminated!`);
+                keepRunning[id] = false;
+            } else {
+                console.log(`Ignored: Device Simulation (${id}) is not running!`);
+            }
         };
 
-        for (let i = 0; i < sensors.length; i++) {
+        var i = 0;
+        do {
             const sensor = sensors[i];
             utils.log('time', 'time');
-            await sleep(sensor.__eventInterval / config.accelerate).then(() => {
+            await sleep(config.device.frequency / config.accelerate).then(() => {
                 publishFunction(sensor);
             });
             utils.log('timeEnd', 'time');
-            if (!keepRunning) {
-                break;
+            i = i + 1;
+            if (autoRestart[config.device.id] && i >= sensors.length) {
+                i = 0;
             }
-        }
+        } while ((i < sensors.length) && keepRunning[config.device.id]);
+        delete keepRunning[config.device.id];
+        delete autoRestart[config.device.id];
         afterPublishFunction();
     }
 
