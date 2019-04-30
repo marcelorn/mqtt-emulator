@@ -13,8 +13,10 @@ router.get('/', (req, res) => {
 });
 
 router.post('/start', (req, res) => {
-  utils.log('error', JSON.stringify(req.body));
-  const config = req.body;
+  var config = req.app.get('config');
+  for (var prop in req.body) {
+    config[prop] = req.body[prop];
+  }
   config.csvMap = new Map();
   generate(config)
     .then(sensors => publisher.autoPublish(config, sensors, emulator))

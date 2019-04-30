@@ -24,7 +24,7 @@ debugServer = () => {
 
 app = args => {
       if (args.api) {
-            api(args.apiPort);
+            api(args.apiPort, args.configFile);
       } else if (args.run) {
             console.log('Device emulator starting...');
             emulator(args);

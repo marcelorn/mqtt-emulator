@@ -71,7 +71,7 @@ autoPublish = (config, sensors, running) => {
 }
 
 publish = (config, topic, payload) => {
-  const client = getClient(config);
+  const client = getClient(config.protocol.mqtt);
   client.on('connect', () => {
     client.publish(topic, JSON.stringify(utils.convertAllAttToString(payload)));
     client.end();

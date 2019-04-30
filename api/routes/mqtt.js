@@ -7,9 +7,9 @@ router.get('/', (req, res) => {
 });
 
 router.post('/publish', (req, res) => {
-    var mqttConfig = {};
+    const config = req.app.get('config');
     console.log(`Received message: topic=${req.body.topic} data=${JSON.stringify(req.body.data)}`);
-    publisher.publish(mqttConfig, req.body.topic, req.body.data);
+    publisher.publish(config, req.body.topic, req.body.data);
     return res.status(200).send({'success': true});
 });
 
