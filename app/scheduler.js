@@ -22,12 +22,13 @@ module.exports = (config, sensors, publishFunction, afterPublishFunction, runnin
             }
         };
 
+        console.log(`Scheduler has started for device ${config.device.id}`);
         var i = 0;
         do {
             const sensor = sensors[i];
             utils.log('time', 'time');
             await sleep(config.device.frequency / config.accelerate).then(() => {
-                publishFunction(sensor);
+                publishFunction(config, sensor);
             });
             utils.log('timeEnd', 'time');
             i = i + 1;

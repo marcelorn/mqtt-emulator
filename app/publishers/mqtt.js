@@ -57,11 +57,12 @@ autoPublish = (config, sensors, running) => {
     scheduler(config, sensors, _publish, _afterPublish, running);
   });
 
-  _publish = payload => {
+  _publish = (config, payload) => {
     delete payload.__eventInterval;
     delete payload.__timestamp;
     const payloadJson = JSON.stringify(utils.convertAllAttToString(payload));
-    client.publish(config.protocol.mqtt.topic, payloadJson);
+    console.log(`Published: topic=${config.device.mqttTopic} message=${payloadJson}`);
+    client.publish(config.device.mqttTopic, payloadJson);
     utils.log('log', `Published ${payloadJson}`);
   }
   _afterPublish = () => {
